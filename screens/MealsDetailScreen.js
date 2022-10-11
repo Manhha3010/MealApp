@@ -1,4 +1,4 @@
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useContext } from "react";
 import {
   Image,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   Button,
 } from "react-native";
+import { FavoritesProvider } from "../store/Favorites";
 import IconButton from "../components/IconButton";
 import List from "../components/MealDetail/List";
 import SubTitle from "../components/MealDetail/SubTitle";
@@ -14,13 +15,17 @@ import MealDetails from "../components/MealDetails";
 import { MEALS } from "../data/dummy-data";
 
 const MealsDetailScreen = (props) => {
-  //   console.log(props.route.params.id);
+  const store = useContext(FavoritesProvider);
+  // console.log(store);
   const catId = props.route.params.id;
-
   const selectedMeal = MEALS.find((meal) => meal.id === catId);
+  const status = store.ids.includes(selectedMeal.id);
+  // console.log(status);
   // console.log(selectedMeal);
   const headerButtonPressHandler = () => {
-    console.log("pressHandler");
+    status
+      ? store.removeFavorite(selectedMeal.id)
+      : store.addFavorite(selectedMeal.id);
   };
 
   props.navigation.setOptions({
@@ -32,7 +37,7 @@ const MealsDetailScreen = (props) => {
       headerRight: () => {
         return (
           <IconButton
-            icon="star"
+            icon={status ? "star" : "star-outline"}
             color="#fff"
             onPress={headerButtonPressHandler}
           />
